@@ -495,5 +495,8 @@ body {
   .footer-contenido{
     display: flex;
     flex-direction: column;
+    border: 1px solid white;
+    padding: 0 20px;
+    width: 290px;
   }
 }
