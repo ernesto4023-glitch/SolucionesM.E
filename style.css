@@ -49,6 +49,7 @@ body {
   display: none;
   font-size: 2rem;
   cursor: pointer;
+  z-index: 2;
 }
 
 /* NAV NORMAL */
@@ -56,6 +57,10 @@ body {
   display: flex;
   gap: 20px;
   list-style: none;
+}
+
+.nav{
+  z-index: 20;
 }
 
 .logo{
@@ -66,6 +71,14 @@ body {
     display: flex;
     gap: 50px;
     list-style: none;
+}
+
+.nav a{
+  display: inline-block;
+}
+
+.nav.active {
+  transform: translateX(0);
 }
 
 .nav-link a{
@@ -84,6 +97,7 @@ body {
 /*BOTON NAV*/
 
 .btn-contacto{
+    display: inline-block;
     background: #00ffcc;
     border: none;
     padding: 10px 20px;
