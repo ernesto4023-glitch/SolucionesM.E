@@ -5,6 +5,23 @@ botones.forEach(btn => {
     })
 })
 
+
+async function cargarPromedio() {
+  try {
+    const res = await fetch('/promedio');
+    const data = await res.json();
+
+    const promedio = parseFloat(data.promedio).toFixed(1);
+    const total = data.total;
+
+    document.getElementById('promedioTexto').innerHTML =
+      `⭐ ${promedio} / 5 (${total} opiniones)`;
+
+  } catch (error) {
+    console.log("Error promedio:", error);
+  }
+}
+
 /*Swiper Imagenes */
 
 const swiper = new Swiper(".mySwiper", {
@@ -171,6 +188,7 @@ if (form) {
       modal.classList.remove("active");
 
       cargarComentarios(); // 🔥 actualizar sin recargar
+      cargarPromedio
 
     } catch (error) {
       console.log("Error enviando comentario:", error);
@@ -235,6 +253,7 @@ async function cargarComentarios() {
 // CARGA INICIAL 🔥
 // =====================
 cargarComentarios();
+cargarPromedio();
 
 swiperComentarios.update();
 
