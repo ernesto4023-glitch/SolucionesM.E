@@ -1,14 +1,14 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs'); // ✅ FALTABA
 const livereload = require('livereload');
 const connectLiveReload = require('connect-livereload');
+const mysql = require('mysql2');
 
 const app = express();
 
 app.use(express.json());
 
-// 👉 Livereload
+/* 🔥 LIVERELoad */
 const liveReloadServer = livereload.createServer();
 liveReloadServer.watch(path.join(__dirname, 'public'));
 
@@ -20,59 +20,83 @@ liveReloadServer.server.once("connection", () => {
 
 app.use(connectLiveReload());
 
-// 👉 Archivos estáticos (SOLO UNA VEZ)
+/* 📁 ARCHIVOS ESTÁTICOS */
 app.use(express.static(path.join(__dirname, 'public')));
 
-const archivo = path.join(__dirname, 'comentarios.json');
+/* 🛢️ CONEXIÓN MYSQL */
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'comentarios_db'
+});
 
+db.connect(err => {
+  if (err) {
+    console.log("❌ Error conexión:", err);
+  } else {
+    console.log("🔥 MySQL conectado");
+  }
+});
 
-// 👉 GUARDAR COMENTARIO
+/* 💾 GUARDAR COMENTARIO */
 app.post('/comentarios', (req, res) => {
-  const nuevo = req.body;
+  const { nombre, servicio, calificacion, comentario } = req.body;
 
-  fs.readFile(archivo, 'utf8', (err, data) => {
-    let comentarios = [];
+  if (!nombre || !servicio || !comentario || !calificacion) {
+    return res.status(400).json({ error: "Faltan datos" });
+  }
 
-    try {
-      comentarios = JSON.parse(data || "[]");
-    } catch (error) {
-      console.log("Error parseando JSON:", error);
-      comentarios = [];
-    }
+  const sql = `
+    INSERT INTO comentarios (nombre, servicio, calificacion, comentario)
+    VALUES (?, ?, ?, ?)
+  `;
 
-    comentarios.push(nuevo);
-
-    fs.writeFile(archivo, JSON.stringify(comentarios, null, 2), (err) => {
-      if (err) {
-        console.log("Error guardando:", err);
-        return res.status(500).json({ error: "Error guardando" });
-      }
-
-      res.json({ mensaje: "Guardado correctamente" });
-    });
-  });
-});
-
-
-// 👉 OBTENER COMENTARIOS
-app.get('/comentarios', (req, res) => {
-  fs.readFile(archivo, 'utf8', (err, data) => {
+  db.query(sql, [nombre, servicio, calificacion, comentario], (err, result) => {
     if (err) {
-      console.log("Error leyendo archivo:", err);
-      return res.json([]);
+      console.log("❌ ERROR SQL:", err);
+      return res.status(500).json({ error: "Error guardando" });
     }
 
-    try {
-      const comentarios = JSON.parse(data || "[]");
-      res.json(comentarios);
-    } catch (error) {
-      console.log("Error parseando JSON:", error);
-      res.json([]);
-    }
+    console.log("✅ INSERTADO:", result);
+
+    res.json({ mensaje: "Comentario guardado correctamente" });
   });
 });
 
+/* 📥 OBTENER COMENTARIOS */
+app.get('/comentarios', (req, res) => {
+  const sql = "SELECT * FROM comentarios ORDER BY fecha DESC";
 
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.log("❌ ERROR:", err);
+      return res.status(500).json([]);
+    }
+
+    res.json(results);
+  });
+});
+
+app.get('/promedio', (req, res) => {
+  const sql = `
+    SELECT 
+      AVG(calificacion) AS promedio,
+      COUNT(*) AS total
+    FROM comentarios
+  `;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({});
+    }
+
+    res.json(result[0]);
+  });
+});
+
+/* 🚀 SERVIDOR */
 app.listen(3000, () => {
   console.log("Servidor en http://localhost:3000");
 });

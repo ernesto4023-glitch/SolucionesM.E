@@ -1,4 +1,4 @@
-const botones = document.querySelectorAll('.btn, .btn-contacto, .btn-porque');
+const botones = document.querySelectorAll(' .btn-contacto, .btn-porque');
 botones.forEach(btn => {
     btn.addEventListener('click', () => {
         window.open('https://wa.me/573233404121?text=Hola%20Estoy%20interesad@%20en%20tus%20servicios','_blank');
