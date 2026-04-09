@@ -29,38 +29,7 @@ const swiper = new Swiper(".mySwiper", {
 });
 
 /*Swiper comentarios*/
-const swiperComentarios = new Swiper(".mySwiperComentarios", {
-  spaceBetween: 20,
-  loop: true,
-
-  autoplay: {
-    delay: 4000,
-    disableOnInteraction: false,
-  },
-
-  // 🔥 RESPONSIVE
-  breakpoints: {
-    0: {
-      slidesPerView: 1 // 📱 celular
-    },
-    768: {
-      slidesPerView: 2 // 📱 tablet
-    },
-    1024: {
-      slidesPerView: 3 // 💻 pantalla grande
-    }
-  },
-
-  pagination: {
-    el: ".comentarios-pagination",
-    clickable: true,
-  },
-
-  navigation: {
-    nextEl: ".comentarios-next",
-    prevEl: ".comentarios-prev",
-  },
-});
+let swiperComentarios;
 
 /*Abrir y Cerrar navbar*/
 
@@ -180,10 +149,17 @@ async function cargarComentarios() {
 
     if (!contenedor) return;
 
+    // 🔥 DESTRUIR SWIPER ANTES DE MODIFICAR EL DOM
+    if (swiperComentarios) {
+      swiperComentarios.destroy(true, true);
+    }
+
     contenedor.innerHTML = "";
 
     if (!datos) {
-      promedioTexto.innerHTML = "Sin opiniones aún";
+      if (promedioTexto) {
+        promedioTexto.innerHTML = "Sin opiniones aún";
+      }
       return;
     }
 
@@ -192,9 +168,10 @@ async function cargarComentarios() {
     let totalEstrellas = 0;
 
     comentarios.forEach((c, i) => {
-      totalEstrellas += Number(c.calificacion);
+      const calif = Number(c.calificacion || 0);
+      totalEstrellas += calif;
 
-      let estrellasHTML = "⭐".repeat(c.calificacion || 0);
+      let estrellasHTML = "⭐".repeat(calif);
 
       const card = `
         <div class="swiper-slide">
@@ -210,12 +187,35 @@ async function cargarComentarios() {
       contenedor.innerHTML += card;
     });
 
-    // ⭐ CALCULAR PROMEDIO
+    // ⭐ PROMEDIO
     const promedio = (totalEstrellas / comentarios.length).toFixed(1);
 
-    promedioTexto.innerHTML = `⭐ ${promedio} / 5 (${comentarios.length} opiniones)`;
+    if (promedioTexto) {
+      promedioTexto.innerHTML = `⭐ ${promedio} / 5 (${comentarios.length} opiniones)`;
+    }
 
-    if (swiperComentarios) swiperComentarios.update();
+    // 🔥 REINICIALIZAR SWIPER
+    swiperComentarios = new Swiper(".mySwiperComentarios", {
+      spaceBetween: 20,
+      loop: true,
+      autoplay: {
+        delay: 4000,
+        disableOnInteraction: false,
+      },
+      breakpoints: {
+        0: { slidesPerView: 1 },
+        768: { slidesPerView: 2 },
+        1024: { slidesPerView: 3 }
+      },
+      pagination: {
+        el: ".comentarios-pagination",
+        clickable: true,
+      },
+      navigation: {
+        nextEl: ".comentarios-next",
+        prevEl: ".comentarios-prev",
+      },
+    });
 
   } catch (error) {
     console.error("Error cargando:", error);
