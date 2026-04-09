@@ -222,6 +222,10 @@ async function cargarComentarios() {
   }
 }
 
+window.addEventListener("DOMContentLoaded", () => {
+  cargarComentarios();
+});
+
 /*ANIMACION CON GSAP*/
 gsap.from('.navbar .logo',{
   x:60,
