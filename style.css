@@ -239,6 +239,18 @@ body {
   transform: scale(1.05);
 }
 
+#descarga{
+  border-radius: 15px;
+  background: rgb(33, 28, 51);
+  border: 2px solid #1a1755;
+  box-shadow: 0 0 20px rgba(45, 39, 84, 0.61);
+}
+
+#descarga a{
+  text-decoration: none;
+  color: #483b85;
+
+}
 /* SECCIÓN HORARIO */
 .horario {
   padding: 80px 20px;
