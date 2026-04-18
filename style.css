@@ -239,16 +239,19 @@ body {
   transform: scale(1.05);
 }
 
-#descarga{
+#descarga {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: rgb(22, 16, 43);
+  color: white;
+  text-decoration: none;
   border-radius: 15px;
-  background: rgb(33, 28, 51);
-  border: 2px solid #1a1755;
-  box-shadow: 0 0 20px rgba(45, 39, 84, 0.61);
+  box-shadow: 0 0 20px rgba(6, 90, 129, 0.3);
 }
 
-#descarga a{
-  text-decoration: none;
-  color: #483b85;
+#descarga:hover{
+  background-color: rgb(42, 32, 80);
+  box-shadow: 0 0 20px rgba(12, 44, 59, 0.9);
 
 }
 /* SECCIÓN HORARIO */
